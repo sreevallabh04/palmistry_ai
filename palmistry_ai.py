@@ -1003,6 +1003,11 @@ def create_streamlit_app():
             with col1:
                 st.subheader("📸 Your Palm Image")
                 st.image(image, caption="Uploaded palm image", use_container_width=True)
+            # --- Image Quality Check ---
+            quality_ok, reasons = check_image_quality(image)
+            if not quality_ok:
+                st.error(f"❌ The uploaded image is not clear enough for palm reading.\n\n" + '\n'.join(reasons) + "\n\n**Tips for best results:**\n- Use a well-lit environment (natural light is best)\n- Place your hand on a plain, non-reflective background\n- Hold the camera steady and focus on your palm\n- Avoid shadows and glare\n- Make sure the palm fills most of the frame\n- Try again with a clearer image!")
+                st.stop()
             temp_path = f"temp_palm_{uploaded_file.name}"
             with open(temp_path, "wb") as f:
                 f.write(uploaded_file.getbuffer())
@@ -1013,6 +1018,13 @@ def create_streamlit_app():
                     palm_mask, palm_center, palm_radius = palmistry_ai.detect_palm_region(processed_image)
                     line_image, skeleton_image = palmistry_ai.extract_palm_lines(processed_image, palm_mask)
                     classified_lines = palmistry_ai.classify_palm_lines(skeleton_image, palm_center, palm_radius)
+                    if not classified_lines:
+                        st.error("❌ No major palm lines could be reliably detected.\n\n**Tips for better results:**\n- Ensure your palm is well-lit and in focus\n- Avoid busy backgrounds\n- Try a different angle or distance\n- Use a higher resolution image\n- Try again with a clearer photo!")
+                        try:
+                            os.remove(temp_path)
+                        except:
+                            pass
+                        st.stop()
                     annotated_image = palmistry_ai.create_annotated_image(original_image, classified_lines)
                     report = palmistry_ai.generate_palmistry_report(classified_lines)
                 try:
@@ -1021,8 +1033,8 @@ def create_streamlit_app():
                     pass
                 if annotated_image is not None:
                     with col2:
-                        st.subheader("✨ Annotated Analysis")
-                        st.image(annotated_image, caption="Your palm with detected lines", use_container_width=True)
+                        st.subheader("✨ Annotated Analysis (Precise)")
+                        st.image(annotated_image, caption="Your palm with precisely detected lines", use_container_width=True)
                         with st.expander("Show detected palm lines (skeleton/edge image)"):
                             st.image(skeleton_image, caption="Detected palm lines (skeleton)", use_container_width=True)
                     st.subheader("📜 Your Palmistry Reading")
@@ -1253,3 +1265,32 @@ def optimize_image_processing(image):
 # --- Streamlit auto-run block ---
 import streamlit as st
 create_streamlit_app()
+
+# --- Image Quality Check Utility ---
+def check_image_quality(image):
+    import cv2
+    import numpy as np
+    # Convert to grayscale
+    gray = np.array(image.convert('L')) if hasattr(image, 'convert') else image
+    # Blurriness: Variance of Laplacian
+    blur_score = cv2.Laplacian(gray, cv2.CV_64F).var()
+    # Brightness: Mean pixel value
+    brightness = np.mean(gray)
+    # Contrast: Standard deviation
+    contrast = np.std(gray)
+    # Heuristics (tuned for palm images)
+    is_blurry = blur_score < 100  # Lower = blurrier
+    is_too_dark = brightness < 60
+    is_too_bright = brightness > 210
+    is_low_contrast = contrast < 30
+    quality_ok = not (is_blurry or is_too_dark or is_too_bright or is_low_contrast)
+    reasons = []
+    if is_blurry:
+        reasons.append('Image is too blurry.')
+    if is_too_dark:
+        reasons.append('Image is too dark.')
+    if is_too_bright:
+        reasons.append('Image is too bright.')
+    if is_low_contrast:
+        reasons.append('Image has low contrast.')
+    return quality_ok, reasons
