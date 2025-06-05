@@ -4,4 +4,5 @@ matplotlib
 scikit-image
 scipy
 Pillow
-streamlit 
+streamlit
+opencv-python-headless
