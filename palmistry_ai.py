@@ -940,6 +940,8 @@ st.markdown("""
         background: #fff !important;
         border-radius: 12px;
         box-shadow: 0 1px 8px #eaeaea;
+        max-width: 100%;
+        height: auto;
     }
     .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
         color: #111;
@@ -956,9 +958,21 @@ st.markdown("""
         font-weight: 500;
         margin-bottom: 0.7em;
     }
-    @media (max-width: 700px) {
-        .centered-container { padding: 1.2rem 0.5rem; }
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+        .centered-container { max-width: 98vw; padding: 1.2rem 0.5rem; }
         .report-card { padding: 1.2rem 0.5rem; }
+    }
+    @media (max-width: 700px) {
+        .centered-container { max-width: 100vw; margin: 16px 0 0 0; padding: 0.7rem 0.2rem; }
+        .report-card { padding: 0.7rem 0.2rem; }
+        .stImage>img { border-radius: 7px; }
+    }
+    @media (max-width: 600px) {
+        .stMarkdown h1 { font-size: 1.5rem !important; }
+        .stMarkdown h2 { font-size: 1.2rem !important; }
+        .stMarkdown h3 { font-size: 1.1rem !important; }
+        .stMarkdown p, .stMarkdown li { font-size: 0.98rem !important; }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -967,7 +981,8 @@ st.markdown("""
 def get_photo_paths():
     photo_dir = "photos"
     if os.path.exists(photo_dir) and os.path.isdir(photo_dir):
-        return [os.path.join(photo_dir, f) for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        photo_paths = [os.path.join(photo_dir, f) for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        return photo_paths
     return []
 
 def main():
