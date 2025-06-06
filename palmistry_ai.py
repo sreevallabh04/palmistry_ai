@@ -832,137 +832,163 @@ class PalmistryAI:
 def main():
     st.set_page_config(page_title="Palmistry AI", page_icon="🖐️", layout="wide")
     st.markdown("""
-        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo:wght@700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" rel="stylesheet">
         <style>
-        body, .main {
-            background: linear-gradient(135deg, #f8fafc 0%, #ffe29f 100%) !important;
-            animation: gradientBG 10s ease-in-out infinite alternate;
-            font-family: 'Exo', 'Orbitron', 'Segoe UI', Arial, sans-serif !important;
+        html, body, .main, .stApp {
+            background: #fff !important;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Arial, sans-serif !important;
+            color: #222 !important;
         }
-        @keyframes gradientBG {
-            0% {background: linear-gradient(135deg, #f8fafc 0%, #ffe29f 100%)}
-            100% {background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%)}
+        .centered-container {
+            max-width: 480px;
+            margin: 48px auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 16px 0 rgba(60,60,60,0.08);
+            padding: 2.5rem 2.2rem 2rem 2.2rem;
+            border: 1.5px solid #e0e0e0;
         }
-        .report-card {
-            background: rgba(255,255,255,0.95);
-            border-radius: 22px;
-            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
-            padding: 2.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid #ffb34733;
-            transition: box-shadow 0.4s cubic-bezier(.4,2,.6,1);
-            animation: fadeIn 1.2s;
-            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
-            font-weight: 700;
-        }
-        .report-card:hover {
-            box-shadow: 0 16px 48px 0 rgba(255, 204, 51, 0.25);
-            border: 1.5px solid #ffcc33;
-            transform: scale(1.01);
-            transition: all 0.3s cubic-bezier(.4,2,.6,1);
-        }
-        .stButton>button {
-            background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+        .form-label {
+            font-size: 1.08rem;
             color: #222;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            padding: 0.7rem 2.2rem;
-            box-shadow: 0 2px 8px #ffcc3340;
-            transition: background 0.3s, box-shadow 0.3s;
-            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
-        }
-        .stButton>button:hover {
-            background: linear-gradient(90deg, #ee9ca7 0%, #ffdde1 100%);
-            color: #fff;
-            box-shadow: 0 4px 16px #ee9ca7a0;
-            transform: scale(1.05);
+            font-weight: 600;
+            margin-bottom: 0.3em;
+            margin-top: 1.1em;
+            display: block;
+            letter-spacing: 0.01em;
         }
         .stTextInput>div>input, .stNumberInput>div>input {
-            border-radius: 10px;
-            border: 1.5px solid #ffcc33;
-            background: #fffbe6;
-            font-size: 1.1rem;
+            border-radius: 8px;
+            border: 1.5px solid #e0e0e0;
+            background: #fff;
+            font-size: 1.08rem;
             padding: 0.5rem 1rem;
-            transition: border 0.3s;
-            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
-            font-weight: 700;
+            font-family: inherit !important;
+            font-weight: 600;
+            color: #222 !important;
+            transition: border 0.2s, box-shadow 0.2s;
         }
         .stTextInput>div>input:focus, .stNumberInput>div>input:focus {
-            border: 2px solid #ee9ca7;
-            background: #fff0f6;
+            border: 1.5px solid #888;
+            background: #f5f5f5;
         }
         .stFileUploader>div>div>div>button {
-            background: linear-gradient(90deg, #ee9ca7 0%, #ffdde1 100%);
+            background: #fff;
             color: #222;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1.1rem;
+            border-radius: 8px;
+            border: 1.5px solid #e0e0e0;
+            font-weight: 700;
+            font-size: 1.08rem;
             padding: 0.7rem 2.2rem;
-            box-shadow: 0 2px 8px #ee9ca740;
-            transition: background 0.3s, box-shadow 0.3s;
-            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
+            box-shadow: 0 1px 4px #eaeaea;
+            font-family: inherit !important;
+            transition: background 0.2s, box-shadow 0.2s, border 0.2s;
         }
         .stFileUploader>div>div>div>button:hover {
-            background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
-            color: #fff;
-            box-shadow: 0 4px 16px #ffcc33a0;
-            transform: scale(1.05);
+            background: #f5f5f5;
+            color: #222;
+            border: 1.5px solid #eaeaea;
+            box-shadow: 0 2px 8px #e0e0e0;
+            transform: scale(1.03);
+        }
+        .stButton>button {
+            background: #fff;
+            color: #111;
+            border-radius: 8px;
+            border: 1.5px solid #e0e0e0;
+            font-weight: 700;
+            font-size: 1.08rem;
+            padding: 0.7rem 2.2rem;
+            box-shadow: 0 1px 4px #eaeaea;
+            font-family: inherit !important;
+            transition: background 0.2s, box-shadow 0.2s, border 0.2s;
+        }
+        .stButton>button:hover {
+            background: #f5f5f5;
+            color: #111;
+            border: 1.5px solid #eaeaea;
+            box-shadow: 0 2px 8px #e0e0e0;
+            transform: scale(1.03);
+        }
+        .report-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px 0 rgba(60,60,60,0.06);
+            padding: 2rem 2.2rem;
+            margin-bottom: 2rem;
+            border: 1.5px solid #e0e0e0;
+            font-family: inherit !important;
+            font-weight: 600;
+            color: #232323 !important;
+            transition: box-shadow 0.2s, border 0.2s;
+        }
+        .report-card:hover {
+            box-shadow: 0 4px 24px 0 rgba(60,60,60,0.10);
+            border: 1.5px solid #eaeaea;
+            transform: scale(1.01);
+        }
+        .stImage>img {
+            background: #fff !important;
+            border-radius: 12px;
+            box-shadow: 0 1px 8px #eaeaea;
         }
         .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-            color: #ee9ca7;
-            font-family: 'Orbitron', 'Exo', 'Segoe Script', 'Comic Sans MS', cursive, sans-serif !important;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 8px #ffdde1a0;
-            animation: fadeIn 1.2s;
+            color: #111;
+            font-family: inherit !important;
+            letter-spacing: 0.5px;
             font-weight: 700;
+            text-shadow: none;
+            margin-bottom: 0.7em;
         }
         .stMarkdown p, .stMarkdown li {
-            font-size: 1.15rem;
-            color: #222;
-            font-family: 'Exo', 'Orbitron', 'Segoe UI', Arial, sans-serif !important;
-            font-weight: 700;
-            animation: fadeIn 1.2s;
+            font-size: 1.08rem;
+            color: #222 !important;
+            font-family: inherit !important;
+            font-weight: 500;
+            margin-bottom: 0.7em;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px);}
-            to { opacity: 1; transform: translateY(0);}
+        @media (max-width: 700px) {
+            .centered-container { padding: 1.2rem 0.5rem; }
+            .report-card { padding: 1.2rem 0.5rem; }
         }
         </style>
     """, unsafe_allow_html=True)
-    with st.sidebar:
-        st.markdown(
-            "<h2 style='color:#ffb347; font-family:Segoe Script, cursive;'>🔮 Palmistry AI</h2>",
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            "<p style='color:#ee9ca7; font-size:1.1rem;'>Unlock the secrets in your palm with AI-powered chiromancy.<br>Made with ❤️ by Sreevallabh and because he is bored and currently jobless</b></p>",
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            '<hr style="border:1.5px solid #ffcc33; border-radius:2px;">',
-            unsafe_allow_html=True
-        )
+
+    # --- Banner or Gallery Images ---
+    photo_paths = []
+    photo_dir = "photos"
+    if os.path.exists(photo_dir) and os.path.isdir(photo_dir):
+        photo_paths = [os.path.join(photo_dir, f) for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+
+    if photo_paths:
+        banner_img_path = random.choice(photo_paths)
+        banner_img = Image.open(banner_img_path)
+        st.image(banner_img, caption="Palmistry Art", use_container_width=True)
+
     st.markdown(
-        "<h1 style='text-align:center; font-size:2.7rem; color:#ee9ca7; font-family:Segoe Script, cursive;'>🖐️ Palmistry AI: Your Personalized Palm Reading</h1>",
+        "<h1 style='text-align:center; font-size:2.5rem; color:#111; font-family:inherit; margin-bottom:0.2em;'>🖐️ Palmistry AI: Your Personalized Palm Reading</h1>",
         unsafe_allow_html=True
     )
     st.markdown(
-        "<p style='text-align:center; font-size:1.3rem; color:#ffb347;'>Upload a clear palm image, select your gender and age, and receive a detailed, authentic palmistry report.</p>",
+        "<p style='text-align:center; font-size:1.15rem; color:#444; margin-bottom:2.2em;'>Upload a clear palm image, select your gender and age, and receive a detailed, authentic palmistry report.</p>",
         unsafe_allow_html=True
     )
-    col1, col2 = st.columns([1,2])
-    with col1:
-        gender = st.selectbox("Gender", ["Male", "Female", "Other"])
-        age = st.number_input("Age", min_value=5, max_value=120, value=25)
-        uploaded_file = st.file_uploader("Upload Palm Image", type=["jpg", "jpeg", "png"])
+
+    # --- Centered Card for Form ---
+    with st.container():
+        st.markdown('<div class="centered-container">', unsafe_allow_html=True)
+        st.markdown('<label class="form-label">Gender</label>', unsafe_allow_html=True)
+        gender = st.selectbox("", ["Male", "Female", "Other"], key="gender_select")
+        st.markdown('<label class="form-label">Age</label>', unsafe_allow_html=True)
+        age = st.number_input("", min_value=5, max_value=120, value=25, key="age_input")
+        st.markdown('<label class="form-label">Upload Palm Image</label>', unsafe_allow_html=True)
+        uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="file_upload")
         st.markdown(
-            "<div style='margin-top:2rem; text-align:center;'><span style='font-size:1.1rem; color:#ee9ca7;'>✨ Your palm is unique. Let AI reveal its story! ✨</span></div>",
+            "<div style='margin-top:1.2rem; text-align:center;'><span style='font-size:1.05rem; color:#888;'>✨ Your palm is unique. Let AI reveal its story! ✨</span></div>",
             unsafe_allow_html=True
         )
-    with col2:
-        if uploaded_file:
-            st.image(uploaded_file, caption="Your Palm", use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
     if uploaded_file:
         image = Image.open(uploaded_file).convert('RGB')
         image_np = np.array(image)
@@ -972,16 +998,15 @@ def main():
         st.markdown('<div class="report-card">', unsafe_allow_html=True)
         st.markdown(report, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
-        st.balloons()  # Fun animation on result
-    st.markdown("""
-        <script>
-        setTimeout(function(){
-            if(window.parent) {
-                window.parent.postMessage({streamlitMessageType: 'streamlit:rendered'}, '*');
-            }
-        }, 1000);
-        </script>
-    """, unsafe_allow_html=True)
+        st.balloons()
+
+    # --- Gallery Section ---
+    if photo_paths:
+        st.markdown("### Palmistry Gallery")
+        gallery_cols = st.columns(4)
+        for idx, img_path in enumerate(photo_paths[:8]):
+            with gallery_cols[idx % 4]:
+                st.image(Image.open(img_path), use_container_width=True)
 
 if __name__ == "__main__":
     main()
