@@ -765,45 +765,52 @@ class PalmistryAI:
         # Life Line
         life = classified.get('life')
         if life['length'] > 0.7:
-            report.append("- **Life Line:** Long and deep — vitality, strong health, zest for life.")
+            report.append("- **Life Line:** Long and deep — vitality, strong health, zest for life. (Or maybe you just moisturize a lot?)")
         else:
-            report.append("- **Life Line:** Short or faint — caution with health, or a life full of changes.")
+            report.append("- **Life Line:** Short or faint — caution with health, or a life full of changes. Or maybe you just don't like commitment!")
         # Heart Line
         heart = classified.get('heart')
         if abs(heart['angle']) > 10:
-            report.append("- **Heart Line:** Curved — warm, emotional, open-hearted.")
+            report.append("- **Heart Line:** Curved — warm, emotional, open-hearted. You probably cry at Pixar movies.")
         else:
-            report.append("- **Heart Line:** Straight — rational in love, values stability.")
+            report.append("- **Heart Line:** Straight — rational in love, values stability. Or maybe you just ghost people efficiently.")
         # Head Line
         head = classified.get('head')
         if head['length'] > 0.7:
-            report.append("- **Head Line:** Long — analytical, thoughtful, intelligent.")
-        if head:
-            if head['length'] > 0.7:
-                report.append("- **Head Line:** Long — analytical, thoughtful, intelligent.")
-            else:
-                report.append("- **Head Line:** Short — intuitive, creative, quick-thinking.")
+            report.append("- **Head Line:** Long — analytical, thoughtful, intelligent. You probably overthink texts.")
+        else:
+            report.append("- **Head Line:** Short — intuitive, creative, quick-thinking. Or you just make it up as you go!")
         # Fate Line
         fate = classified.get('fate')
-        if fate:
-            if fate['length'] > 0.7:
-                report.append("- **Fate Line:** Strong — sense of destiny, career focus, life purpose.")
-            else:
-                report.append("- **Fate Line:** Weak or absent — self-made, values freedom, or changes career paths.")
+        if fate['length'] > 0.7:
+            report.append("- **Fate Line:** Strong — sense of destiny, career focus, life purpose. Or you just like making to-do lists.")
+        else:
+            report.append("- **Fate Line:** Weak or absent — self-made, values freedom, or changes career paths. Or maybe you just can't pick a Netflix show.")
         report.append("\n---\n")
-        # Gender and Age-based insights
-        if gender and age:
-            if gender.lower() == 'female' and age < 30:
-                report.append("**Youthful energy and adaptability are prominent in your palm.**")
-            elif gender.lower() == 'male' and age > 40:
-                report.append("**Your palm shows wisdom gained through experience and perseverance.**")
-            else:
-                report.append("**Your palm reflects a unique blend of your age and life experience.**")
+        # Funny Age-based insights
+        if age:
+            try:
+                age_val = int(age)
+                if age_val < 10:
+                    report.append("\n**You're so young, your palm lines are still in beta! Come back after you finish your homework.** 🍼")
+                elif age_val < 18:
+                    report.append("\n**Under 18? Your palm lines are still downloading. Try again after you survive puberty!** 🤓")
+                elif age_val < 25:
+                    report.append("\n**Ah, youth! Your palm lines are as fresh as your memes. Don't worry, life gets weirder.** 😎")
+                elif age_val < 40:
+                    report.append("\n**Prime of life! Your palm lines are bold, but your back probably already hurts.** 🏋️")
+                elif age_val < 60:
+                    report.append("\n**Seasoned! Your palm lines have seen things. Like dial-up internet and floppy disks.** 💾")
+                else:
+                    report.append("\n**Over 60? Your palm lines are vintage. You probably have stories that start with 'Back in my day...'.** 👴👵")
+                    report.append("**Honestly, your palm lines are so old, they might be eligible for a senior discount.** 🦖")
+            except Exception:
+                report.append("\n**Your age is a mystery, just like your palm lines!** 🕵️")
         # Chiromancy-based summary
         report.append("\n## Chiromancy Synthesis\n")
-        report.append("Your palm reveals a tapestry of strengths and opportunities. The interplay of your lines suggests a balance between heart and mind, and a destiny shaped by both fate and free will.\n")
+        report.append("Your palm reveals a tapestry of strengths, opportunities, and questionable life choices. The interplay of your lines suggests a balance between heart, mind, and the urge to binge-watch TV at 2am.\n")
         report.append("\n---\n")
-        report.append("### Recommendations\n- Embrace your strengths and nurture your growth.\n- Remember, palmistry is a tool for self-reflection, not prediction.\n- Use these insights to guide your journey with confidence.\n")
+        report.append("### Recommendations\n- Embrace your strengths and nurture your growth.\n- Remember, palmistry is a tool for self-reflection, not prediction.\n- Use these insights to guide your journey with confidence. Or just to impress your friends at parties.\n")
         return '\n'.join(report)
 
     def process_image(self, image: np.ndarray, gender: str = None, age: int = None) -> Tuple[Optional[np.ndarray], str]:
@@ -829,137 +836,142 @@ class PalmistryAI:
             self.logger.error(f"Error processing image: {str(e)}")
             return None, f"Error processing image: {str(e)}"
 
-def main():
-    st.set_page_config(page_title="Palmistry AI", page_icon="🖐️", layout="wide")
-    st.markdown("""
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&display=swap" rel="stylesheet">
-        <style>
-        html, body, .main, .stApp {
-            background: #fff !important;
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Arial, sans-serif !important;
-            color: #222 !important;
-        }
-        .centered-container {
-            max-width: 480px;
-            margin: 48px auto 0 auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 2px 16px 0 rgba(60,60,60,0.08);
-            padding: 2.5rem 2.2rem 2rem 2.2rem;
-            border: 1.5px solid #e0e0e0;
-        }
-        .form-label {
-            font-size: 1.08rem;
-            color: #222;
-            font-weight: 600;
-            margin-bottom: 0.3em;
-            margin-top: 1.1em;
-            display: block;
-            letter-spacing: 0.01em;
-        }
-        .stTextInput>div>input, .stNumberInput>div>input {
-            border-radius: 8px;
-            border: 1.5px solid #e0e0e0;
-            background: #fff;
-            font-size: 1.08rem;
-            padding: 0.5rem 1rem;
-            font-family: inherit !important;
-            font-weight: 600;
-            color: #222 !important;
-            transition: border 0.2s, box-shadow 0.2s;
-        }
-        .stTextInput>div>input:focus, .stNumberInput>div>input:focus {
-            border: 1.5px solid #888;
-            background: #f5f5f5;
-        }
-        .stFileUploader>div>div>div>button {
-            background: #fff;
-            color: #222;
-            border-radius: 8px;
-            border: 1.5px solid #e0e0e0;
-            font-weight: 700;
-            font-size: 1.08rem;
-            padding: 0.7rem 2.2rem;
-            box-shadow: 0 1px 4px #eaeaea;
-            font-family: inherit !important;
-            transition: background 0.2s, box-shadow 0.2s, border 0.2s;
-        }
-        .stFileUploader>div>div>div>button:hover {
-            background: #f5f5f5;
-            color: #222;
-            border: 1.5px solid #eaeaea;
-            box-shadow: 0 2px 8px #e0e0e0;
-            transform: scale(1.03);
-        }
-        .stButton>button {
-            background: #fff;
-            color: #111;
-            border-radius: 8px;
-            border: 1.5px solid #e0e0e0;
-            font-weight: 700;
-            font-size: 1.08rem;
-            padding: 0.7rem 2.2rem;
-            box-shadow: 0 1px 4px #eaeaea;
-            font-family: inherit !important;
-            transition: background 0.2s, box-shadow 0.2s, border 0.2s;
-        }
-        .stButton>button:hover {
-            background: #f5f5f5;
-            color: #111;
-            border: 1.5px solid #eaeaea;
-            box-shadow: 0 2px 8px #e0e0e0;
-            transform: scale(1.03);
-        }
-        .report-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 2px 12px 0 rgba(60,60,60,0.06);
-            padding: 2rem 2.2rem;
-            margin-bottom: 2rem;
-            border: 1.5px solid #e0e0e0;
-            font-family: inherit !important;
-            font-weight: 600;
-            color: #232323 !important;
-            transition: box-shadow 0.2s, border 0.2s;
-        }
-        .report-card:hover {
-            box-shadow: 0 4px 24px 0 rgba(60,60,60,0.10);
-            border: 1.5px solid #eaeaea;
-            transform: scale(1.01);
-        }
-        .stImage>img {
-            background: #fff !important;
-            border-radius: 12px;
-            box-shadow: 0 1px 8px #eaeaea;
-        }
-        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-            color: #111;
-            font-family: inherit !important;
-            letter-spacing: 0.5px;
-            font-weight: 700;
-            text-shadow: none;
-            margin-bottom: 0.7em;
-        }
-        .stMarkdown p, .stMarkdown li {
-            font-size: 1.08rem;
-            color: #222 !important;
-            font-family: inherit !important;
-            font-weight: 500;
-            margin-bottom: 0.7em;
-        }
-        @media (max-width: 700px) {
-            .centered-container { padding: 1.2rem 0.5rem; }
-            .report-card { padding: 1.2rem 0.5rem; }
-        }
-        </style>
-    """, unsafe_allow_html=True)
+# Palmistry AI - Streamlit Deployment Ready
+# To deploy: Place this file and requirements.txt in your repo root. Add a 'photos' directory (optional) for gallery images.
+# Set the entrypoint to 'palmistry_ai.py' in Streamlit Cloud.
 
-    # --- Banner or Gallery Images ---
-    photo_paths = []
+# --- Apple-level CSS ---
+st.markdown("""
+    <style>
+    html, body, .main, .stApp {
+        background: #fff !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Arial, sans-serif !important;
+        color: #222 !important;
+    }
+    .centered-container {
+        max-width: 480px;
+        margin: 48px auto 0 auto;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 2px 16px 0 rgba(60,60,60,0.08);
+        padding: 2.5rem 2.2rem 2rem 2.2rem;
+        border: 1.5px solid #e0e0e0;
+    }
+    .form-label {
+        font-size: 1.08rem;
+        color: #222;
+        font-weight: 600;
+        margin-bottom: 0.3em;
+        margin-top: 1.1em;
+        display: block;
+        letter-spacing: 0.01em;
+    }
+    .stTextInput>div>input, .stNumberInput>div>input {
+        border-radius: 8px;
+        border: 1.5px solid #e0e0e0;
+        background: #fff;
+        font-size: 1.08rem;
+        padding: 0.5rem 1rem;
+        font-family: inherit !important;
+        font-weight: 600;
+        color: #222 !important;
+        transition: border 0.2s, box-shadow 0.2s;
+    }
+    .stTextInput>div>input:focus, .stNumberInput>div>input:focus {
+        border: 1.5px solid #888;
+        background: #f5f5f5;
+    }
+    .stFileUploader>div>div>div>button {
+        background: #fff;
+        color: #222;
+        border-radius: 8px;
+        border: 1.5px solid #e0e0e0;
+        font-weight: 700;
+        font-size: 1.08rem;
+        padding: 0.7rem 2.2rem;
+        box-shadow: 0 1px 4px #eaeaea;
+        font-family: inherit !important;
+        transition: background 0.2s, box-shadow 0.2s, border 0.2s;
+    }
+    .stFileUploader>div>div>div>button:hover {
+        background: #f5f5f5;
+        color: #222;
+        border: 1.5px solid #eaeaea;
+        box-shadow: 0 2px 8px #e0e0e0;
+        transform: scale(1.03);
+    }
+    .stButton>button {
+        background: #fff;
+        color: #111;
+        border-radius: 8px;
+        border: 1.5px solid #e0e0e0;
+        font-weight: 700;
+        font-size: 1.08rem;
+        padding: 0.7rem 2.2rem;
+        box-shadow: 0 1px 4px #eaeaea;
+        font-family: inherit !important;
+        transition: background 0.2s, box-shadow 0.2s, border 0.2s;
+    }
+    .stButton>button:hover {
+        background: #f5f5f5;
+        color: #111;
+        border: 1.5px solid #eaeaea;
+        box-shadow: 0 2px 8px #e0e0e0;
+        transform: scale(1.03);
+    }
+    .report-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px 0 rgba(60,60,60,0.06);
+        padding: 2rem 2.2rem;
+        margin-bottom: 2rem;
+        border: 1.5px solid #e0e0e0;
+        font-family: inherit !important;
+        font-weight: 600;
+        color: #232323 !important;
+        transition: box-shadow 0.2s, border 0.2s;
+    }
+    .report-card:hover {
+        box-shadow: 0 4px 24px 0 rgba(60,60,60,0.10);
+        border: 1.5px solid #eaeaea;
+        transform: scale(1.01);
+    }
+    .stImage>img {
+        background: #fff !important;
+        border-radius: 12px;
+        box-shadow: 0 1px 8px #eaeaea;
+    }
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        color: #111;
+        font-family: inherit !important;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+        text-shadow: none;
+        margin-bottom: 0.7em;
+    }
+    .stMarkdown p, .stMarkdown li {
+        font-size: 1.08rem;
+        color: #222 !important;
+        font-family: inherit !important;
+        font-weight: 500;
+        margin-bottom: 0.7em;
+    }
+    @media (max-width: 700px) {
+        .centered-container { padding: 1.2rem 0.5rem; }
+        .report-card { padding: 1.2rem 0.5rem; }
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+@st.cache_resource(show_spinner=False)
+def get_photo_paths():
     photo_dir = "photos"
     if os.path.exists(photo_dir) and os.path.isdir(photo_dir):
-        photo_paths = [os.path.join(photo_dir, f) for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        return [os.path.join(photo_dir, f) for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    return []
 
+def main():
+    photo_paths = get_photo_paths()
     if photo_paths:
         banner_img_path = random.choice(photo_paths)
         banner_img = Image.open(banner_img_path)
@@ -974,7 +986,6 @@ def main():
         unsafe_allow_html=True
     )
 
-    # --- Centered Card for Form ---
     with st.container():
         st.markdown('<div class="centered-container">', unsafe_allow_html=True)
         st.markdown('<label class="form-label">Gender</label>', unsafe_allow_html=True)
@@ -1000,7 +1011,6 @@ def main():
         st.markdown('</div>', unsafe_allow_html=True)
         st.balloons()
 
-    # --- Gallery Section ---
     if photo_paths:
         st.markdown("### Palmistry Gallery")
         gallery_cols = st.columns(4)
