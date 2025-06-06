@@ -103,12 +103,14 @@ except Exception as e:
 
 # Fallback API keys (use only if no environment or config keys available)
 if not SESSION_API_KEYS:
+    # Using sample/dummy Groq-like keys that signal to the generate_report function
+    # to use the local fallback
     SESSION_API_KEYS = [
-        "AIzaSyB_xPYF3IAO9j6m3GARZjyMQE3GIz7I2s0",
-        "AIzaSyCPK-TcfngXIZXoInz8nKkUei7hVYvBKRo",
-        "AIzaSyAB113h5ALxnUiZRv6cxE_58AqObSyrJA4"
+        "gsk_local_fallback_key1",
+        "gsk_local_fallback_key2",
+        "gsk_local_fallback_key3"
     ]
-    logger.warning("Using fallback API keys. Consider setting GROQ_API_KEY in environment variables for better security.")
+    logger.warning("Using local fallback analysis. For AI-powered reports, set GROQ_API_KEY in environment variables.")
 
 def estimate_tokens(text: str) -> int:
     """
