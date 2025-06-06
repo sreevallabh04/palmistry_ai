@@ -1,12 +1,13 @@
 {
-  "groq_api": {
-    "url": "https://api.groq.com/openai/v1/chat/completions",
-    "models": [
-      "llama3-70b-8192",
-      "mistral-7b-8192",
-      "llama2-70b-4096"
-    ]
+  "gemini_api": {
+    "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+    "model": "gemini-pro"
   },
-  "api_keys": [],
-  "_note": "Add your API keys to the api_keys array or use environment variables (recommended) for better security."
+  "api_keys": [
+    "AIzaSyB_xPYF3IAO9j6m3GARZjyMQE3GIz7I2s0",
+    "AIzaSyBY3JRDz66RYCkRVPO0siI_akc-wGLxKGk",
+    "AIzaSyAB113h5ALxnUiZRv6cxE_58AqObSyrJA4",
+    "AIzaSyCPK-TcfngXIZXoInz8nKkUei7hVYvBKRo"
+  ],
+  "_note": "Using Gemini API for palmistry analysis. Multiple API keys provided for redundancy."
 }
