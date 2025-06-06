@@ -861,7 +861,7 @@ def main():
             st.image("logo.png", width=120)
         st.markdown("### Palmistry AI")
         st.write("Unlock the secrets in your palm with AI-powered chiromancy.")
-        st.write("Made with ❤️ by [Your Company]")
+        st.write("Made with ❤️ by sreevallabh ( I dont believe in palmistry myself but I am bored)")
     st.title("🖐️ Palmistry AI: Your Personalized Palm Reading")
     st.write("Upload a clear palm image, select your gender and age, and receive a detailed, authentic palmistry report.")
     col1, col2 = st.columns([1,2])
