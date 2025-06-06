@@ -30,7 +30,16 @@ import tempfile
 import logging
 import time
 from typing import Dict, List, Tuple, Optional, Union, Any
-from dotenv import load_dotenv
+
+# Try to import dotenv, but don't fail if it's not available
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    logger = logging.getLogger(__name__)
+    logger.info("Successfully loaded environment variables from .env file")
+except ImportError:
+    logger = logging.getLogger(__name__)
+    logger.warning("python-dotenv not available, environment variables from .env will not be loaded")
 
 # Try to import tiktoken, but don't fail if it's not available
 try:
