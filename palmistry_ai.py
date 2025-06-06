@@ -832,43 +832,134 @@ class PalmistryAI:
 def main():
     st.set_page_config(page_title="Palmistry AI", page_icon="🖐️", layout="wide")
     st.markdown("""
+        <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Exo:wght@700&display=swap" rel="stylesheet">
         <style>
-        .main {background: #f8fafc;}
+        body, .main {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffe29f 100%) !important;
+            animation: gradientBG 10s ease-in-out infinite alternate;
+            font-family: 'Exo', 'Orbitron', 'Segoe UI', Arial, sans-serif !important;
+        }
+        @keyframes gradientBG {
+            0% {background: linear-gradient(135deg, #f8fafc 0%, #ffe29f 100%)}
+            100% {background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 100%)}
+        }
         .report-card {
-            background: white;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            padding: 2rem;
+            background: rgba(255,255,255,0.95);
+            border-radius: 22px;
+            box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+            padding: 2.5rem;
             margin-bottom: 2rem;
+            border: 1px solid #ffb34733;
+            transition: box-shadow 0.4s cubic-bezier(.4,2,.6,1);
+            animation: fadeIn 1.2s;
+            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
+            font-weight: 700;
+        }
+        .report-card:hover {
+            box-shadow: 0 16px 48px 0 rgba(255, 204, 51, 0.25);
+            border: 1.5px solid #ffcc33;
+            transform: scale(1.01);
+            transition: all 0.3s cubic-bezier(.4,2,.6,1);
         }
         .stButton>button {
             background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
             color: #222;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: bold;
             font-size: 1.1rem;
-            padding: 0.6rem 2rem;
+            padding: 0.7rem 2.2rem;
+            box-shadow: 0 2px 8px #ffcc3340;
+            transition: background 0.3s, box-shadow 0.3s;
+            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
+        }
+        .stButton>button:hover {
+            background: linear-gradient(90deg, #ee9ca7 0%, #ffdde1 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px #ee9ca7a0;
+            transform: scale(1.05);
         }
         .stTextInput>div>input, .stNumberInput>div>input {
-            border-radius: 8px;
-            border: 1px solid #ffcc33;
+            border-radius: 10px;
+            border: 1.5px solid #ffcc33;
             background: #fffbe6;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            transition: border 0.3s;
+            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
+            font-weight: 700;
+        }
+        .stTextInput>div>input:focus, .stNumberInput>div>input:focus {
+            border: 2px solid #ee9ca7;
+            background: #fff0f6;
+        }
+        .stFileUploader>div>div>div>button {
+            background: linear-gradient(90deg, #ee9ca7 0%, #ffdde1 100%);
+            color: #222;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 0.7rem 2.2rem;
+            box-shadow: 0 2px 8px #ee9ca740;
+            transition: background 0.3s, box-shadow 0.3s;
+            font-family: 'Orbitron', 'Exo', Arial, sans-serif !important;
+        }
+        .stFileUploader>div>div>div>button:hover {
+            background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px #ffcc33a0;
+            transform: scale(1.05);
+        }
+        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+            color: #ee9ca7;
+            font-family: 'Orbitron', 'Exo', 'Segoe Script', 'Comic Sans MS', cursive, sans-serif !important;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px #ffdde1a0;
+            animation: fadeIn 1.2s;
+            font-weight: 700;
+        }
+        .stMarkdown p, .stMarkdown li {
+            font-size: 1.15rem;
+            color: #222;
+            font-family: 'Exo', 'Orbitron', 'Segoe UI', Arial, sans-serif !important;
+            font-weight: 700;
+            animation: fadeIn 1.2s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
         }
         </style>
     """, unsafe_allow_html=True)
     with st.sidebar:
-        if os.path.exists("logo.png"):
-            st.image("logo.png", width=120)
-        st.markdown("### Palmistry AI")
-        st.write("Unlock the secrets in your palm with AI-powered chiromancy.")
-        st.write("Made with ❤️ by sreevallabh ( I dont believe in palmistry myself but I am bored)")
-    st.title("🖐️ Palmistry AI: Your Personalized Palm Reading")
-    st.write("Upload a clear palm image, select your gender and age, and receive a detailed, authentic palmistry report.")
+        st.markdown(
+            "<h2 style='color:#ffb347; font-family:Segoe Script, cursive;'>🔮 Palmistry AI</h2>",
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            "<p style='color:#ee9ca7; font-size:1.1rem;'>Unlock the secrets in your palm with AI-powered chiromancy.<br>Made with ❤️ by Sreevallabh and because he is bored and currently jobless</b></p>",
+            unsafe_allow_html=True
+        )
+        st.markdown(
+            '<hr style="border:1.5px solid #ffcc33; border-radius:2px;">',
+            unsafe_allow_html=True
+        )
+    st.markdown(
+        "<h1 style='text-align:center; font-size:2.7rem; color:#ee9ca7; font-family:Segoe Script, cursive;'>🖐️ Palmistry AI: Your Personalized Palm Reading</h1>",
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        "<p style='text-align:center; font-size:1.3rem; color:#ffb347;'>Upload a clear palm image, select your gender and age, and receive a detailed, authentic palmistry report.</p>",
+        unsafe_allow_html=True
+    )
     col1, col2 = st.columns([1,2])
     with col1:
         gender = st.selectbox("Gender", ["Male", "Female", "Other"])
         age = st.number_input("Age", min_value=5, max_value=120, value=25)
         uploaded_file = st.file_uploader("Upload Palm Image", type=["jpg", "jpeg", "png"])
+        st.markdown(
+            "<div style='margin-top:2rem; text-align:center;'><span style='font-size:1.1rem; color:#ee9ca7;'>✨ Your palm is unique. Let AI reveal its story! ✨</span></div>",
+            unsafe_allow_html=True
+        )
     with col2:
         if uploaded_file:
             st.image(uploaded_file, caption="Your Palm", use_container_width=True)
@@ -881,6 +972,16 @@ def main():
         st.markdown('<div class="report-card">', unsafe_allow_html=True)
         st.markdown(report, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
+        st.balloons()  # Fun animation on result
+    st.markdown("""
+        <script>
+        setTimeout(function(){
+            if(window.parent) {
+                window.parent.postMessage({streamlitMessageType: 'streamlit:rendered'}, '*');
+            }
+        }, 1000);
+        </script>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
