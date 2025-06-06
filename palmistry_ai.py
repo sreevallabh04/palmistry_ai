@@ -24,15 +24,13 @@ import random
 import requests
 import json
 import streamlit as st
-import cv2
-import numpy as np
-from PIL import Image
 import io
 import base64
 import tempfile
 import logging
 import time
 from typing import Dict, List, Tuple, Optional, Union, Any
+from dotenv import load_dotenv
 
 # Try to import tiktoken, but don't fail if it's not available
 try:
