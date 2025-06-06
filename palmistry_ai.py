@@ -976,7 +976,7 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
+#please work I am begging you
 @st.cache_resource(show_spinner=False)
 def get_photo_paths():
     photo_dir = "photos"
