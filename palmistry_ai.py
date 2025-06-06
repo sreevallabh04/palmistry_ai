@@ -871,13 +871,13 @@ def main():
         uploaded_file = st.file_uploader("Upload Palm Image", type=["jpg", "jpeg", "png"])
     with col2:
         if uploaded_file:
-            st.image(uploaded_file, caption="Your Palm", use_column_width=True)
+            st.image(uploaded_file, caption="Your Palm", use_container_width=True)
     if uploaded_file:
         image = Image.open(uploaded_file).convert('RGB')
         image_np = np.array(image)
         palmistry = PalmistryAI()
         result_image, report = palmistry.process_image(image_np, gender=gender, age=age)
-        st.image(result_image, caption="Palm Analysis", use_column_width=True)
+        st.image(result_image, caption="Palm Analysis", use_container_width=True)
         st.markdown('<div class="report-card">', unsafe_allow_html=True)
         st.markdown(report, unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
