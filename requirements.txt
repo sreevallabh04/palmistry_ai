@@ -6,6 +6,7 @@ scipy>=1.7.0
 pillow>=9.0.0
 streamlit>=1.10.0
 requests>=2.25.0
-python-dotenv>=0.15.0
-tiktoken>=0.3.0
-qrcode>=7.3.0
+# Optional dependencies (will be gracefully handled if not available)
+python-dotenv>=0.15.0; platform_system != "Linux"  # Optional for environment variable loading
+tiktoken>=0.3.0; platform_system != "Linux"  # Optional for token counting
+qrcode>=7.3.0; platform_system != "Linux"  # Optional for QR code generation
