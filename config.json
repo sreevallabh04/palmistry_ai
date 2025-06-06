@@ -1,0 +1,11 @@
+{
+  "groq_api": {
+    "url": "https://api.groq.com/openai/v1/chat/completions",
+    "models": [
+      "llama3-70b-8192",
+      "mistral-7b-8192",
+      "llama2-70b-4096"
+    ]
+  },
+  "api_keys": []
+}
