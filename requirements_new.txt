@@ -1,0 +1,11 @@
+opencv-python==4.11.0.86
+numpy==1.26.4
+matplotlib==3.13.1
+scikit-image==0.22.0
+scipy==1.13.1
+pillow==10.2.0
+streamlit==1.43.2
+requests==2.31.0
+python-dotenv==1.0.1
+tiktoken==0.5.2
+qrcode==7.4.2
