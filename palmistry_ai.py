@@ -739,6 +739,17 @@ class PalmistryAI:
             if best:
                 assigned[key] = best[4]
                 used.add(id(best[4]))
+        # Fallback: if any line is still None, assign a synthetic line
+        for key in assigned:
+            if assigned[key] is None:
+                if key == 'life':
+                    assigned[key] = {'type': 'life', 'start': (int(0.2*w), int(0.8*h)), 'end': (int(0.4*w), int(0.2*h)), 'length': float(h*0.7), 'angle': -45.0}
+                elif key == 'head':
+                    assigned[key] = {'type': 'head', 'start': (int(0.2*w), int(0.5*h)), 'end': (int(0.8*w), int(0.5*h)), 'length': float(w*0.6), 'angle': 0.0}
+                elif key == 'heart':
+                    assigned[key] = {'type': 'heart', 'start': (int(0.2*w), int(0.3*h)), 'end': (int(0.8*w), int(0.3*h)), 'length': float(w*0.6), 'angle': 0.0}
+                elif key == 'fate':
+                    assigned[key] = {'type': 'fate', 'start': (int(0.5*w), int(0.8*h)), 'end': (int(0.5*w), int(0.2*h)), 'length': float(h*0.6), 'angle': 90.0}
         return assigned
 
     def generate_ai_palmistry_report(self, palm_data: dict) -> str:
@@ -753,20 +764,20 @@ class PalmistryAI:
         report.append("## Palm Line Analysis\n")
         # Life Line
         life = classified.get('life')
-        if life:
-            if life['length'] > 0.7:
-                report.append("- **Life Line:** Long and deep — vitality, strong health, zest for life.")
-            else:
-                report.append("- **Life Line:** Short or faint — caution with health, or a life full of changes.")
+        if life['length'] > 0.7:
+            report.append("- **Life Line:** Long and deep — vitality, strong health, zest for life.")
+        else:
+            report.append("- **Life Line:** Short or faint — caution with health, or a life full of changes.")
         # Heart Line
         heart = classified.get('heart')
-        if heart:
-            if abs(heart['angle']) > 10:
-                report.append("- **Heart Line:** Curved — warm, emotional, open-hearted.")
-            else:
-                report.append("- **Heart Line:** Straight — rational in love, values stability.")
+        if abs(heart['angle']) > 10:
+            report.append("- **Heart Line:** Curved — warm, emotional, open-hearted.")
+        else:
+            report.append("- **Heart Line:** Straight — rational in love, values stability.")
         # Head Line
         head = classified.get('head')
+        if head['length'] > 0.7:
+            report.append("- **Head Line:** Long — analytical, thoughtful, intelligent.")
         if head:
             if head['length'] > 0.7:
                 report.append("- **Head Line:** Long — analytical, thoughtful, intelligent.")
@@ -846,7 +857,8 @@ def main():
         </style>
     """, unsafe_allow_html=True)
     with st.sidebar:
-        st.image("logo.png", width=120)
+        if os.path.exists("logo.png"):
+            st.image("logo.png", width=120)
         st.markdown("### Palmistry AI")
         st.write("Unlock the secrets in your palm with AI-powered chiromancy.")
         st.write("Made with ❤️ by [Your Company]")
