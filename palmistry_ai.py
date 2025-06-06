@@ -71,13 +71,37 @@ MODEL_TOKEN_LIMITS = {
     "llama2-70b-4096": 3500
 }
 
-# Session-specific API keys (not stored permanently)
-SESSION_API_KEYS = [
-    "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",
-    "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",
-    "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",
-    "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"
-]
+# Try to load API keys from environment variables first
+ENV_API_KEY = os.environ.get("GROQ_API_KEY")
+
+# Session-specific API keys as fallback
+SESSION_API_KEYS = []
+
+# Add environment API key if available
+if ENV_API_KEY:
+    SESSION_API_KEYS.append(ENV_API_KEY)
+    logger.info("Using API key from environment variables")
+
+# Load keys from config.json if available
+try:
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config = json.load(f)
+            if "api_keys" in config and config["api_keys"]:
+                SESSION_API_KEYS.extend(config["api_keys"])
+                logger.info(f"Loaded {len(config['api_keys'])} API keys from config.json")
+except Exception as e:
+    logger.warning(f"Failed to load API keys from config.json: {str(e)}")
+
+# Fallback API keys (use only if no environment or config keys available)
+if not SESSION_API_KEYS:
+    SESSION_API_KEYS = [
+        "AIzaSyB_xPYF3IAO9j6m3GARZjyMQE3GIz7I2s0",
+        "AIzaSyCPK-TcfngXIZXoInz8nKkUei7hVYvBKRo",
+        "AIzaSyAB113h5ALxnUiZRv6cxE_58AqObSyrJA4"
+    ]
+    logger.warning("Using fallback API keys. Consider setting GROQ_API_KEY in environment variables for better security.")
 
 def estimate_tokens(text: str) -> int:
     """
