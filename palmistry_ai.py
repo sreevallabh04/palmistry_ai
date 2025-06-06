@@ -836,11 +836,7 @@ class PalmistryAI:
             self.logger.error(f"Error processing image: {str(e)}")
             return None, f"Error processing image: {str(e)}"
 
-# Palmistry AI - Streamlit Deployment Ready
-# To deploy: Place this file and requirements.txt in your repo root. Add a 'photos' directory (optional) for gallery images.
-# Set the entrypoint to 'palmistry_ai.py' in Streamlit Cloud.
-
-# --- Apple-level CSS ---
+# --- Apple-level CSS and Responsive Design ---
 st.markdown("""
     <style>
     html, body, .main, .stApp {
@@ -976,22 +972,51 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-#please work I am begging you
-@st.cache_resource(show_spinner=False)
-def get_photo_paths():
-    photo_dir = "photos"
-    if os.path.exists(photo_dir) and os.path.isdir(photo_dir):
-        photo_paths = [os.path.join(photo_dir, f) for f in os.listdir(photo_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-        return photo_paths
-    return []
 
+# --- Robust static image path handling ---
+def get_static_image_path(folder, filename):
+    return os.path.join(os.path.dirname(__file__), folder, filename)
+
+# --- Modularized image upload ---
+def upload_image():
+    uploaded_file = st.file_uploader("Upload Palm Image", type=["jpg", "jpeg", "png"])
+    if uploaded_file:
+        try:
+            image = Image.open(uploaded_file).convert('RGB')
+            return np.array(image)
+        except Exception as e:
+            st.error(f"Failed to load image: {e}")
+    return None
+
+# --- Modularized palm line detection ---
+def detect_palm_lines(image_np, gender, age):
+    palmistry = PalmistryAI()
+    result_image, report = palmistry.process_image(image_np, gender=gender, age=age)
+    return result_image, report
+
+# --- Modularized annotation and display ---
+def annotate_and_display(result_image, report):
+    st.image(result_image, caption="Palm Analysis", use_container_width=True)
+    st.markdown('<div class="report-card">', unsafe_allow_html=True)
+    st.markdown(report, unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.balloons()
+
+# --- Modularized static gallery display ---
+def show_static_gallery(folder='images', max_images=8):
+    folder_path = os.path.join(os.path.dirname(__file__), folder)
+    if os.path.exists(folder_path) and os.path.isdir(folder_path):
+        image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+        if image_files:
+            st.markdown(f"### {folder.capitalize()} Gallery")
+            gallery_cols = st.columns(4)
+            for idx, fname in enumerate(image_files[:max_images]):
+                img_path = os.path.join(folder_path, fname)
+                with gallery_cols[idx % 4]:
+                    st.image(Image.open(img_path), use_container_width=True)
+
+# --- Main app logic ---
 def main():
-    photo_paths = get_photo_paths()
-    if photo_paths:
-        banner_img_path = random.choice(photo_paths)
-        banner_img = Image.open(banner_img_path)
-        st.image(banner_img, caption="Palmistry Art", use_container_width=True)
-
     st.markdown(
         "<h1 style='text-align:center; font-size:2.5rem; color:#111; font-family:inherit; margin-bottom:0.2em;'>🖐️ Palmistry AI: Your Personalized Palm Reading</h1>",
         unsafe_allow_html=True
@@ -1000,7 +1025,6 @@ def main():
         "<p style='text-align:center; font-size:1.15rem; color:#444; margin-bottom:2.2em;'>Upload a clear palm image, select your gender and age, and receive a detailed, authentic palmistry report.</p>",
         unsafe_allow_html=True
     )
-
     with st.container():
         st.markdown('<div class="centered-container">', unsafe_allow_html=True)
         st.markdown('<label class="form-label">Gender</label>', unsafe_allow_html=True)
@@ -1008,30 +1032,22 @@ def main():
         st.markdown('<label class="form-label">Age</label>', unsafe_allow_html=True)
         age = st.number_input("", min_value=5, max_value=120, value=25, key="age_input")
         st.markdown('<label class="form-label">Upload Palm Image</label>', unsafe_allow_html=True)
-        uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"], key="file_upload")
+        image_np = upload_image()
+        st.caption("Tip: If upload fails, try a smaller image (under 5MB) or a different browser.")
         st.markdown(
             "<div style='margin-top:1.2rem; text-align:center;'><span style='font-size:1.05rem; color:#888;'>✨ Your palm is unique. Let AI reveal its story! ✨</span></div>",
             unsafe_allow_html=True
         )
         st.markdown('</div>', unsafe_allow_html=True)
-
-    if uploaded_file:
-        image = Image.open(uploaded_file).convert('RGB')
-        image_np = np.array(image)
-        palmistry = PalmistryAI()
-        result_image, report = palmistry.process_image(image_np, gender=gender, age=age)
-        st.image(result_image, caption="Palm Analysis", use_container_width=True)
-        st.markdown('<div class="report-card">', unsafe_allow_html=True)
-        st.markdown(report, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.balloons()
-
-    if photo_paths:
-        st.markdown("### Palmistry Gallery")
-        gallery_cols = st.columns(4)
-        for idx, img_path in enumerate(photo_paths[:8]):
-            with gallery_cols[idx % 4]:
-                st.image(Image.open(img_path), use_container_width=True)
+    if image_np is not None:
+        try:
+            result_image, report = detect_palm_lines(image_np, gender, age)
+            annotate_and_display(result_image, report)
+        except Exception as e:
+            st.error(f"Image upload or analysis failed. Try a smaller image or a different browser. Error: {e}")
+    # Show all static galleries
+    for folder in ['photos', 'images', 'screenshots']:
+        show_static_gallery(folder)
 
 if __name__ == "__main__":
     main()
