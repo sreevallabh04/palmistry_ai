@@ -7,5 +7,6 @@
       "llama2-70b-4096"
     ]
   },
-  "api_keys": []
+  "api_keys": [],
+  "_note": "Add your API keys to the api_keys array or use environment variables (recommended) for better security."
 }
