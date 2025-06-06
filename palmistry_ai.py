@@ -719,244 +719,156 @@ class PalmistryAI:
             self.logger.error(f"Error drawing analysis: {str(e)}")
             return image
 
+    def assign_major_lines(self, lines, palm_region):
+        x, y, w, h = palm_region
+        center_x, center_y = w // 2, h // 2
+        assigned = {'life': None, 'heart': None, 'head': None, 'fate': None}
+        scores = []
+        for line in lines:
+            x1, y1 = line['start']
+            x2, y2 = line['end']
+            # Heuristics for each line
+            life_score = -abs(x1 - int(0.2*w)) - abs(y1 - int(0.8*h)) - abs(x2 - int(0.4*w)) - abs(y2 - int(0.2*h))
+            heart_score = -abs(y1 - int(0.3*h)) - abs(y2 - int(0.3*h)) - abs(x1 - int(0.2*w)) - abs(x2 - int(0.8*w))
+            head_score = -abs(y1 - int(0.5*h)) - abs(y2 - int(0.5*h))
+            fate_score = -abs(x1 - center_x) - abs(x2 - center_x) - abs(y1 - int(0.8*h)) - abs(y2 - int(0.2*h))
+            scores.append((life_score, heart_score, head_score, fate_score, line))
+        used = set()
+        for idx, key in enumerate(['life', 'heart', 'head', 'fate']):
+            best = max([s for s in scores if id(s[4]) not in used], key=lambda s: s[idx], default=None)
+            if best:
+                assigned[key] = best[4]
+                used.add(id(best[4]))
+        return assigned
+
     def generate_ai_palmistry_report(self, palm_data: dict) -> str:
         """
-        Generate an AI-powered palmistry report using Gemini API with fallback options.
-        
-        Args:
-            palm_data (dict): Processed palm data
-            
-        Returns:
-            str: Generated palmistry report
+        Generate a detailed, authentic palmistry report using chiromancy rules, gender, and age.
         """
-        # Prepare the palm data for AI analysis
-        prepared_data = self.prepare_palm_data_for_ai(palm_data)
-        
-        # Try each API key in rotation
-        for attempt in range(len(self.groq_api_keys)):
-            api_key = self.groq_api_keys[self.current_key_index]
-            self.current_key_index = (self.current_key_index + 1) % len(self.groq_api_keys)
-            
-            try:
-                # Prepare the API request
-                url = f"{GEMINI_API_URL}?key={api_key}"
-                
-                # Prepare the prompt
-                prompt = f"""As an expert palm reader, analyze this palm data and provide a detailed palmistry reading:
-                {json.dumps(prepared_data, indent=2)}
-                
-                Please provide a comprehensive analysis including:
-                1. Overall personality traits
-                2. Life path and destiny
-                3. Career prospects
-                4. Relationships and emotional life
-                5. Health indicators
-                6. Future opportunities and challenges
-                
-                Format the response in a clear, structured way with sections and bullet points where appropriate."""
-                
-                # Prepare the request payload
-                payload = {
-                    "contents": [{
-                        "parts": [{
-                            "text": prompt
-                        }]
-                    }],
-                    "generationConfig": {
-                        "temperature": 0.7,
-                        "maxOutputTokens": 2000
-                    }
-                }
-                
-                # Make the API request
-                response = requests.post(
-                    url,
-                    json=payload,
-                    timeout=30
-                )
-                
-                if response.status_code == 200:
-                    result = response.json()
-                    if "candidates" in result and len(result["candidates"]) > 0:
-                        content = result["candidates"][0]["content"]
-                        if "parts" in content and len(content["parts"]) > 0:
-                            return content["parts"][0]["text"]
-                
-                self.logger.warning(f"API request failed with status code {response.status_code}")
-                
-            except Exception as e:
-                self.logger.error(f"Error generating AI report: {str(e)}")
-                continue
-        
-        # If all API attempts failed, generate a local fallback report
-        self.logger.info("Generating local fallback palmistry report")
-        return self.generate_local_fallback_report(prepared_data)
+        gender = palm_data.get("gender", "Unknown")
+        age = palm_data.get("age", "Unknown")
+        classified = palm_data.get("classified_lines", {})
+        report = [f"# Palmistry Report\n\n**Gender:** {gender}  |  **Age:** {age}"]
+        report.append("\n---\n")
+        report.append("## Palm Line Analysis\n")
+        # Life Line
+        life = classified.get('life')
+        if life:
+            if life['length'] > 0.7:
+                report.append("- **Life Line:** Long and deep — vitality, strong health, zest for life.")
+            else:
+                report.append("- **Life Line:** Short or faint — caution with health, or a life full of changes.")
+        # Heart Line
+        heart = classified.get('heart')
+        if heart:
+            if abs(heart['angle']) > 10:
+                report.append("- **Heart Line:** Curved — warm, emotional, open-hearted.")
+            else:
+                report.append("- **Heart Line:** Straight — rational in love, values stability.")
+        # Head Line
+        head = classified.get('head')
+        if head:
+            if head['length'] > 0.7:
+                report.append("- **Head Line:** Long — analytical, thoughtful, intelligent.")
+            else:
+                report.append("- **Head Line:** Short — intuitive, creative, quick-thinking.")
+        # Fate Line
+        fate = classified.get('fate')
+        if fate:
+            if fate['length'] > 0.7:
+                report.append("- **Fate Line:** Strong — sense of destiny, career focus, life purpose.")
+            else:
+                report.append("- **Fate Line:** Weak or absent — self-made, values freedom, or changes career paths.")
+        report.append("\n---\n")
+        # Gender and Age-based insights
+        if gender and age:
+            if gender.lower() == 'female' and age < 30:
+                report.append("**Youthful energy and adaptability are prominent in your palm.**")
+            elif gender.lower() == 'male' and age > 40:
+                report.append("**Your palm shows wisdom gained through experience and perseverance.**")
+            else:
+                report.append("**Your palm reflects a unique blend of your age and life experience.**")
+        # Chiromancy-based summary
+        report.append("\n## Chiromancy Synthesis\n")
+        report.append("Your palm reveals a tapestry of strengths and opportunities. The interplay of your lines suggests a balance between heart and mind, and a destiny shaped by both fate and free will.\n")
+        report.append("\n---\n")
+        report.append("### Recommendations\n- Embrace your strengths and nurture your growth.\n- Remember, palmistry is a tool for self-reflection, not prediction.\n- Use these insights to guide your journey with confidence.\n")
+        return '\n'.join(report)
 
-    def generate_local_fallback_report(self, palm_data: dict) -> str:
-        """
-        Generate a basic palmistry report using local analysis when AI is unavailable.
-        
-        Args:
-            palm_data (dict): Processed palm data
-            
-        Returns:
-            str: Generated palmistry report
-        """
-        report = []
-        report.append("# Palmistry Analysis Report")
-        report.append("\n## Basic Analysis")
-        
-        # Analyze heart line
-        if "heart_line" in palm_data:
-            heart_line = palm_data["heart_line"]
-            if heart_line["length"] > 0.7:
-                report.append("- Strong emotional nature with deep capacity for love")
-            else:
-                report.append("- Practical approach to relationships and emotions")
-        
-        # Analyze head line
-        if "head_line" in palm_data:
-            head_line = palm_data["head_line"]
-            if head_line["length"] > 0.7:
-                report.append("- Strong intellectual capabilities and analytical mind")
-            else:
-                report.append("- Intuitive and creative thinking style")
-        
-        # Analyze life line
-        if "life_line" in palm_data:
-            life_line = palm_data["life_line"]
-            if life_line["length"] > 0.7:
-                report.append("- Strong vitality and physical energy")
-            else:
-                report.append("- Focus on quality over quantity in life experiences")
-        
-        report.append("\n## Recommendations")
-        report.append("1. Consider consulting with a professional palm reader for a more detailed analysis")
-        report.append("2. Keep in mind that palmistry is one of many tools for self-reflection")
-        report.append("3. Use this reading as a starting point for personal growth")
-        
-        return "\n".join(report)
-
-    def process_image(self, image: np.ndarray) -> Tuple[Optional[np.ndarray], str]:
-        """
-        Process the input image and generate palmistry analysis.
-        
-        Args:
-            image (np.ndarray): Input image
-            
-        Returns:
-            Tuple[Optional[np.ndarray], str]: Processed image and analysis report
-        """
+    def process_image(self, image: np.ndarray, gender: str = None, age: int = None) -> Tuple[Optional[np.ndarray], str]:
         try:
-            # Ensure image is in BGR format
             image = self.ensure_bgr(image)
-            
-            # Preprocess the image
             processed_image = self.preprocess_image(image)
-            
-            # Detect palm region
-            palm_region = self.detect_palm_region(processed_image)
-            if palm_region is None:
-                return None, "No palm detected in the image. Please ensure the palm is clearly visible."
-            
-            # Extract palm lines
+            palm_region = self.detect_palm_region(processed_image)[1]
             lines = self.extract_palm_lines(processed_image, palm_region)
-            if not lines:
-                return None, "No palm lines detected. Please ensure the palm is clearly visible."
-            
-            # Extract landmarks
             landmarks = self.extract_hand_landmarks(processed_image, palm_region)
-            
-            # Classify palm lines
-            classified_lines = self.classify_palm_lines(lines, landmarks)
-            
-            # Prepare palm data for AI analysis
+            assigned_lines = self.assign_major_lines(lines, palm_region)
             palm_data = {
                 "timestamp": datetime.now().isoformat(),
                 "lines": lines,
                 "landmarks": landmarks,
-                "classified_lines": classified_lines
+                "classified_lines": assigned_lines,
+                "gender": gender,
+                "age": age
             }
-            
-            # Generate AI report
-            try:
-                report = self.generate_ai_palmistry_report(palm_data)
-            except Exception as e:
-                self.logger.error(f"Error generating AI report: {str(e)}")
-                report = self.generate_local_fallback_report(palm_data)
-            
-            # Draw analysis on image
-            result_image = self.draw_analysis(processed_image, lines, landmarks, classified_lines)
-            
+            report = self.generate_ai_palmistry_report(palm_data)
+            result_image = self.draw_analysis(processed_image, lines, landmarks, assigned_lines)
             return result_image, report
-            
         except Exception as e:
             self.logger.error(f"Error processing image: {str(e)}")
             return None, f"Error processing image: {str(e)}"
 
 def main():
-    st.set_page_config(
-        page_title="AI Palmistry Analysis",
-        page_icon="🔮",
-        layout="wide"
-    )
-    
-    st.title("🔮 AI Palmistry Analysis")
+    st.set_page_config(page_title="Palmistry AI", page_icon="🖐️", layout="wide")
     st.markdown("""
-    Upload a clear image of your palm to receive an AI-powered palmistry reading.
-    The analysis will include:
-    - Palm lines (Heart, Head, Life, Fate, Sun, Mercury)
-    - Finger analysis
-    - Overall palm characteristics
-    """)
-    
-    # Show QR code for localhost
-    if QR_AVAILABLE and st.experimental_get_query_params() == {}:
-        import socket
-        hostname = socket.gethostname()
-        local_ip = socket.gethostbyname(hostname)
-        url = f"http://{local_ip}:8501"
-        qr = qrcode.make(url)
-        st.image(np.array(qr), caption="Scan to open on mobile", use_container_width=True)
-    
-    uploaded_file = st.file_uploader("Choose a palm image...", type=["jpg", "jpeg", "png"])
-    
-    if uploaded_file is not None:
-        try:
-            # Read image
-            image = Image.open(uploaded_file)
-            image_np = np.array(image)
-            
-            # Process image
-            result, message = PalmistryAI().process_image(image_np)
-            
-            if result is None:
-                st.error(message)
-                return
-                
-            col1, col2 = st.columns(2)
-            with col1:
-                st.subheader("Palm Analysis")
-                st.image(result, caption="Analyzed Palm", use_container_width=True)
-            with col2:
-                st.subheader("Palmistry Report")
-                st.markdown(message)
-                
-            if message:
-                report_data = {
-                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "analysis": message
-                }
-                st.download_button(
-                    label="Download Report",
-                    data=json.dumps(report_data, indent=2),
-                    file_name="palmistry_report.json",
-                    mime="application/json"
-                )
-                
-        except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
-            logger.error(f"Error in main: {str(e)}")
+        <style>
+        .main {background: #f8fafc;}
+        .report-card {
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .stButton>button {
+            background: linear-gradient(90deg, #ffb347 0%, #ffcc33 100%);
+            color: #222;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 0.6rem 2rem;
+        }
+        .stTextInput>div>input, .stNumberInput>div>input {
+            border-radius: 8px;
+            border: 1px solid #ffcc33;
+            background: #fffbe6;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+    with st.sidebar:
+        st.image("logo.png", width=120)
+        st.markdown("### Palmistry AI")
+        st.write("Unlock the secrets in your palm with AI-powered chiromancy.")
+        st.write("Made with ❤️ by [Your Company]")
+    st.title("🖐️ Palmistry AI: Your Personalized Palm Reading")
+    st.write("Upload a clear palm image, select your gender and age, and receive a detailed, authentic palmistry report.")
+    col1, col2 = st.columns([1,2])
+    with col1:
+        gender = st.selectbox("Gender", ["Male", "Female", "Other"])
+        age = st.number_input("Age", min_value=5, max_value=120, value=25)
+        uploaded_file = st.file_uploader("Upload Palm Image", type=["jpg", "jpeg", "png"])
+    with col2:
+        if uploaded_file:
+            st.image(uploaded_file, caption="Your Palm", use_column_width=True)
+    if uploaded_file:
+        image = Image.open(uploaded_file).convert('RGB')
+        image_np = np.array(image)
+        palmistry = PalmistryAI()
+        result_image, report = palmistry.process_image(image_np, gender=gender, age=age)
+        st.image(result_image, caption="Palm Analysis", use_column_width=True)
+        st.markdown('<div class="report-card">', unsafe_allow_html=True)
+        st.markdown(report, unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
