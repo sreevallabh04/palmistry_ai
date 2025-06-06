@@ -202,20 +202,9 @@ class PalmistryAI:
             'mercury': (255, 0, 255) # Magenta
         }
         
-        # Try to load the hand cascade classifier
-        try:
-            cascade_path = cv2.data.haarcascades + 'haarcascade_hand.xml'
-            if not os.path.exists(cascade_path):
-                self.logger.warning("Hand cascade classifier not found. Using contour-based detection.")
-                self.hand_cascade = None
-            else:
-                self.hand_cascade = cv2.CascadeClassifier(cascade_path)
-                if self.hand_cascade.empty():
-                    self.logger.warning("Failed to load hand cascade classifier. Using contour-based detection.")
-                    self.hand_cascade = None
-        except Exception as e:
-            self.logger.error(f"Error loading cascade classifier: {str(e)}")
-            self.hand_cascade = None
+        # Set hand cascade to None - haarcascade_hand.xml is not standard in OpenCV
+        self.logger.info("Using contour-based palm detection for better compatibility.")
+        self.hand_cascade = None
         
         # Groq API configuration with multiple keys and fallback options
         self.groq_api_keys = SESSION_API_KEYS
