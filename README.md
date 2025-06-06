@@ -89,3 +89,12 @@ MIT License. See [LICENSE](LICENSE) for details.
 ---
 
 > _"The lines of your palm are the map of your soul."_
+
+# --- Image Quality Check Utility ---
+def check_image_quality(image):
+    import cv2
+    import numpy as np
+    # ... (rest of the function) ...
+
+def create_streamlit_app():
+    # ... (now you can call check_image_quality here) ...
